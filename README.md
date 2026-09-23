@@ -26,3 +26,11 @@ WebP *encoder* even though `features.check("webp")` returns True, because that
 flag reports decode support. `Image.SAVE` is the registry that actually decides.
 
 MIT licensed.
+
+## Contributing
+
+Issues and pull requests are welcome, and especially so during Hacktoberfest.
+The [good first issues](https://github.com/DimitrovK/bitrot-demo/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+are small and self-contained on purpose: a damage report next to each image, a
+control for how many bits to flip, a hex view of the changed byte, a Dockerfile,
+and some tests.
