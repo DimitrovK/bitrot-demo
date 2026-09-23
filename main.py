@@ -2,13 +2,17 @@
 import io, random
 from fastapi import FastAPI, Response
 from fastapi.responses import HTMLResponse
-from PIL import Image
+from PIL import Image, features
 
 app = FastAPI()
 SRC = Image.open("source.png").convert("RGB")
-FORMATS = {"png": ("PNG", "image/png"), "jpeg": ("JPEG", "image/jpeg"),
-           "webp": ("WEBP", "image/webp"), "gif": ("GIF", "image/gif"),
-           "bmp": ("BMP", "image/bmp")}
+_ALL = {"png": ("PNG", "image/png"), "jpeg": ("JPEG", "image/jpeg"),
+        "webp": ("WEBP", "image/webp"), "gif": ("GIF", "image/gif"),
+        "bmp": ("BMP", "image/bmp")}
+# The Pillow build on some platforms has no WebP encoder, so only offer what
+# this machine can actually write.
+FORMATS = {k: v for k, v in _ALL.items()
+           if v[0] in Image.SAVE or (k == "webp" and features.check("webp"))}
 
 
 def encode(fmt):
