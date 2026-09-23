@@ -9,10 +9,10 @@ SRC = Image.open("source.png").convert("RGB")
 _ALL = {"png": ("PNG", "image/png"), "jpeg": ("JPEG", "image/jpeg"),
         "webp": ("WEBP", "image/webp"), "gif": ("GIF", "image/gif"),
         "bmp": ("BMP", "image/bmp")}
-# The Pillow build on some platforms has no WebP encoder, so only offer what
-# this machine can actually write.
-FORMATS = {k: v for k, v in _ALL.items()
-           if v[0] in Image.SAVE or (k == "webp" and features.check("webp"))}
+# The Pillow build on some platforms has no WebP *encoder*, even though
+# features.check("webp") reports True for decoding. Ask the save registry.
+Image.init()
+FORMATS = {k: v for k, v in _ALL.items() if v[0] in Image.SAVE}
 
 
 def encode(fmt):
