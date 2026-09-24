@@ -1,6 +1,6 @@
 """Flip bits in an image, in the browser, and see which formats lie to you."""
 import io, random
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import HTMLResponse
 from PIL import Image, features
 
@@ -25,12 +25,15 @@ def encode(fmt):
 
 @app.get("/img")
 def img(fmt: str = "png", bits: int = 1, seed: int = 0):
+    if fmt not in FORMATS:
+        raise HTTPException(status_code=400, detail=f"Unsupported image format: {fmt}")
     raw, mime = encode(fmt)
+    if bits > len(raw) * 8:
+        raise HTTPException(status_code=400, detail="bits exceeds the number of bits in the encoded image")
     b = bytearray(raw)
     rng = random.Random(seed)
-    for _ in range(max(0, bits)):
-        i = rng.randrange(len(b))
-        b[i] ^= 1 << rng.randrange(8)
+    for bit in rng.sample(range(len(b) * 8), max(0, bits)):
+        b[bit // 8] ^= 1 << (bit % 8)
     return Response(bytes(b), media_type=mime,
                     headers={"Cache-Control": "no-store", "X-Bytes": str(len(b))})
 
