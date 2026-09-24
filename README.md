@@ -21,6 +21,12 @@ uvicorn main:app --reload
 `/img?fmt=png&bits=1&seed=3` renders the corrupted file directly; change `bits`
 and `seed` to get different damage.
 
+TIFF (`fmt=tiff`) and AVIF (`fmt=avif`) are also offered when the installed
+Pillow build has their encoders. The page lists only encodable formats; browser
+display support is separate, so an encoded image may not render inline in every
+browser. The pinned Pillow 11.1.0 does not provide AVIF encoding by itself; use a
+Pillow build with an AVIF encoder to compare that format.
+
 One thing worth knowing if you deploy this: some Pillow builds ship without a
 WebP *encoder* even though `features.check("webp")` returns True, because that
 flag reports decode support. `Image.SAVE` is the registry that actually decides.
