@@ -8,7 +8,8 @@ app = FastAPI()
 SRC = Image.open("source.png").convert("RGB")
 _ALL = {"png": ("PNG", "image/png"), "jpeg": ("JPEG", "image/jpeg"),
         "webp": ("WEBP", "image/webp"), "gif": ("GIF", "image/gif"),
-        "bmp": ("BMP", "image/bmp")}
+        "bmp": ("BMP", "image/bmp"), "tiff": ("TIFF", "image/tiff"),
+        "avif": ("AVIF", "image/avif")}
 # The Pillow build on some platforms has no WebP *encoder*, even though
 # features.check("webp") reports True for decoding. Ask the save registry.
 Image.init()
@@ -56,7 +57,7 @@ def index():
  a{{color:#6ea8fe}}
 </style>
 <h1>One flipped bit</h1>
-<p>The same picture, encoded five ways, with exactly one bit flipped in each file.
+<p>The same picture, encoded {len(FORMATS)} ways, with exactly one bit flipped in each file.
 Some formats stop at the damage and show you half a picture. Others hand you a
 complete image in which almost nothing is the original colour.</p>
 <div class="row"><figure><img src="/img?fmt=png&bits=0"><figcaption>the original</figcaption></figure>{cards}</div>
