@@ -21,6 +21,24 @@ uvicorn main:app --reload
 `/img?fmt=png&bits=1&seed=3` renders the corrupted file directly; change `bits`
 and `seed` to get different damage.
 
+Each selected bit is flipped once, so `bits=N` changes exactly N distinct bits.
+Non-positive counts leave the image unchanged. Counts larger than the encoded
+image's bit length and formats without an available encoder return HTTP 400.
+The same format, count and seed produce the same bytes within a given Pillow build.
+
+## Tests
+
+From the repository root:
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+Tests use a tiny in-memory image and FastAPI's test client; no server or network
+is needed. They cover encoding, unchanged output, exact bit counts, repeatability,
+and unsupported formats (including an unavailable WebP encoder).
+
 One thing worth knowing if you deploy this: some Pillow builds ship without a
 WebP *encoder* even though `features.check("webp")` returns True, because that
 flag reports decode support. `Image.SAVE` is the registry that actually decides.
