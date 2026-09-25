@@ -21,6 +21,10 @@ uvicorn main:app --reload
 `/img?fmt=png&bits=1&seed=3` renders the corrupted file directly; change `bits`
 and `seed` to get different damage.
 
+On the page, use the 0–50 bit slider to adjust the damage, or **Reroll damage**
+to try the next seed across all formats. The original stays unchanged. Without
+JavaScript, the page still shows the default one-bit comparison.
+
 One thing worth knowing if you deploy this: some Pillow builds ship without a
 WebP *encoder* even though `features.check("webp")` returns True, because that
 flag reports decode support. `Image.SAVE` is the registry that actually decides.

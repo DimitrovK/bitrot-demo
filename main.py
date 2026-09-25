@@ -43,7 +43,7 @@ def health():
 @app.get("/", response_class=HTMLResponse)
 def index():
     cards = "".join(
-        f'<figure><img src="/img?fmt={f}&bits=1&seed=3" alt="{f} with one bit flipped">'
+        f'<figure data-format="{f}"><img src="/img?fmt={f}&bits=1&seed=3" alt="{f} with one bit flipped">'
         f'<figcaption>{f.upper()} — 1 bit flipped</figcaption></figure>' for f in FORMATS)
     return f"""<!doctype html><meta charset=utf-8><title>One flipped bit</title>
 <style>
@@ -54,10 +54,41 @@ def index():
  img{{width:240px;height:240px;object-fit:contain;background:#fff;border-radius:6px;display:block}}
  figcaption{{font-size:.8rem;color:#9aa4b2;margin-top:8px;text-align:center}}
  a{{color:#6ea8fe}}
+ .controls{{margin-bottom:24px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}}
+ .controls[hidden]{{display:none}}
 </style>
 <h1>One flipped bit</h1>
-<p>The same picture, encoded five ways, with exactly one bit flipped in each file.
+<p>The same picture, encoded five ways, starting with one bit flipped in each file.
 Some formats stop at the damage and show you half a picture. Others hand you a
 complete image in which almost nothing is the original colour.</p>
+<div class="controls" hidden>
+ <label for="bits">Bits to flip: <output id="bit-count" for="bits">1</output></label>
+ <input id="bits" type="range" min="0" max="50" value="1">
+ <button id="reroll" type="button">Reroll damage</button>
+ <span>Seed: <output id="seed">3</output></span>
+</div>
 <div class="row"><figure><img src="/img?fmt=png&bits=0"><figcaption>the original</figcaption></figure>{cards}</div>
+<script>
+ const bits = document.querySelector('#bits');
+ let seed = 3;
+ function updateImages() {{
+   const count = Number(bits.value);
+   document.querySelector('#bit-count').value = count;
+   document.querySelector('#seed').value = seed;
+   document.querySelectorAll('figure[data-format]').forEach(card => {{
+     const format = card.dataset.format;
+     const description = `${{count}} bit${{count === 1 ? '' : 's'}} flipped`;
+     const image = card.querySelector('img');
+     image.src = '/img?' + new URLSearchParams({{fmt: format, bits: count, seed}});
+     image.alt = `${{format}} with ${{description}}`;
+     card.querySelector('figcaption').textContent = `${{format.toUpperCase()}} — ${{description}}`;
+   }});
+ }}
+ bits.addEventListener('input', updateImages);
+ document.querySelector('#reroll').addEventListener('click', () => {{
+   seed += 1;
+   updateImages();
+ }});
+ document.querySelector('.controls').hidden = false;
+</script>
 """
